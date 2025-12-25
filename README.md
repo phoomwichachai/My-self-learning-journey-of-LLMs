@@ -96,8 +96,8 @@ Install required libraries (e.g., on Google Colab):
 
 ```bash
 pip install transformers accelerate sentencepiece huggingface_hub \
-    sentence-transformers faiss-cpu PyPDF2 nltk
-
+    sentence-transformers faiss-cpu PyPDF2 nltk 
+```
 # 🧪 PEFT / LoRA / QLoRA / DLoRA Lab
 
 This repository documents hands-on experiments with **Parameter-Efficient Fine-Tuning (PEFT)** techniques on Large Language Models (LLMs) under limited GPU resources (~15GB VRAM).
