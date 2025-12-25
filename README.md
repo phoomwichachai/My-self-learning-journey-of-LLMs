@@ -97,3 +97,65 @@ Install required libraries (e.g., on Google Colab):
 ```bash
 pip install transformers accelerate sentencepiece huggingface_hub \
     sentence-transformers faiss-cpu PyPDF2 nltk
+
+# 🧪 PEFT / LoRA / QLoRA / DLoRA Lab
+
+This repository documents hands-on experiments with **Parameter-Efficient Fine-Tuning (PEFT)** techniques on Large Language Models (LLMs) under limited GPU resources (~15GB VRAM).
+
+The focus is on **practical setup, real errors encountered, and lessons learned**, rather than idealized benchmarks.
+
+---
+
+## 🎯 Objectives
+
+- Understand trade-offs between LoRA, QLoRA, and DLoRA
+- Experiment with multi-adapter fine-tuning (DLoRA)
+- Identify common pitfalls when training LLMs on Colab-scale GPUs
+- Build a reusable lab setup for PEFT experiments
+
+---
+
+## 🧠 Techniques Explored
+
+- **LoRA** – Low-Rank Adaptation
+- **QLoRA** – 4-bit Quantization + LoRA
+- **DLoRA** – Multiple task-specific LoRA adapters on a single base model
+
+---
+
+## 🤖 Models
+
+- Base models:  
+  - `microsoft/phi-2`  
+  - `mistralai/Mistral-7B-v0.1`
+- Frameworks & tools:
+  - HuggingFace Transformers
+  - PEFT
+  - BitsAndBytes
+  - Datasets
+
+---
+
+## 🔬 Experiments & Findings
+
+### 1. Base Model Loading
+
+- Loading 7B models can trigger **OOM during checkpoint shard loading**
+- Peak VRAM usage often occurs **before training begins**
+
+**Lesson learned**  
+> Peak memory usage during model loading is as important as training-time memory.
+
+---
+
+### 2. QLoRA (4-bit Quantization)
+
+Configuration example:
+```python
+BitsAndBytesConfig(
+    load_in_4bit=True,
+    bnb_4bit_quant_type="nf4",
+    bnb_4bit_compute_dtype=torch.float16,
+    bnb_4bit_use_double_quant=False
+)
+
