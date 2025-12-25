@@ -171,7 +171,7 @@ Lesson learned
 
 QLoRA reduces parameter size but does not guarantee low peak VRAM usage.
 
-##3. DLoRA (Multiple Adapters)
+### 3. DLoRA (Multiple Adapters)
 
 - Models were wrapped as PeftModelForCausalLM
 
@@ -186,7 +186,7 @@ Key insight:
 
 DLoRA enables task separation and continual learning without duplicating or retraining the base model.
 
-##4. Adapter Saving & Loading
+### 4. Adapter Saving & Loading
 
 Incorrect approach (not supported):
 ```python
@@ -203,7 +203,7 @@ dloras/math/
 ├── adapter_model.safetensors
 └── adapter_config.json
 ```
-##5. Tokenization Pitfall
+### 5. Tokenization Pitfall
 
 Causal language models such as Phi, LLaMA, and Mistral do not define a padding token by default.
 
@@ -211,7 +211,7 @@ Fix applied:
 ```python
 tokenizer.pad_token = tokenizer.eos_token
 ```
-##6. Dataset Handling
+### 6. Dataset Handling
 
 - Small datasets were used for rapid iteration and debugging
 
@@ -223,7 +223,7 @@ Lesson learned:
 
 Small, shuffled datasets are ideal for lab-scale experiments and debugging.
 
-##7. Training Stability (FP16 Issue)
+### 7. Training Stability (FP16 Issue)
 
 Error encountered:
 ```text
