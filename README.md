@@ -158,4 +158,95 @@ BitsAndBytesConfig(
     bnb_4bit_compute_dtype=torch.float16,
     bnb_4bit_use_double_quant=False
 )
+```
+Issues encountered:
 
+- Errors related to CPU or disk offloading
+
+- CUDA OOM despite 4-bit quantization
+
+- Memory fragmentation during the quantization step
+
+Lesson learned
+
+QLoRA reduces parameter size but does not guarantee low peak VRAM usage.
+
+##3. DLoRA (Multiple Adapters)
+
+- Models were wrapped as PeftModelForCausalLM
+
+- Task-specific adapters were created (e.g. task_math)
+
+- Adapters can be switched dynamically without retraining the base model
+```python
+model.set_adapter("task_math")
+```
+
+Key insight:
+
+DLoRA enables task separation and continual learning without duplicating or retraining the base model.
+
+##4. Adapter Saving & Loading
+
+Incorrect approach (not supported):
+```python
+model.save_adapter(...)
+```
+Correct and recommended approach:
+```python
+model.save_pretrained("dloras/math")
+```
+
+Saved artifacts:
+```bash
+dloras/math/
+├── adapter_model.safetensors
+└── adapter_config.json
+```
+##5. Tokenization Pitfall
+
+Causal language models such as Phi, LLaMA, and Mistral do not define a padding token by default.
+
+Fix applied:
+```python
+tokenizer.pad_token = tokenizer.eos_token
+```
+##6. Dataset Handling
+
+- Small datasets were used for rapid iteration and debugging
+
+- Data was shuffled to reduce ordering bias
+
+- Sampling beyond the dataset size caused index errors
+
+Lesson learned:
+
+Small, shuffled datasets are ideal for lab-scale experiments and debugging.
+
+##7. Training Stability (FP16 Issue)
+
+Error encountered:
+```text
+ValueError: Attempting to unscale FP16 gradients
+```
+
+Resolution:
+
+FP16 was disabled during LoRA / DLoRA training
+```python
+fp16=False
+```
+
+Insight
+
+LoRA and DLoRA do not require FP16 to be effective and are often more stable without it.
+
+🧩 Key Takeaways
+
+- PEFT techniques are powerful but not plug-and-play
+
+- QLoRA does not eliminate all memory-related issues
+
+- DLoRA is effective for multi-task adaptation and continual learning
+
+- Many failures originate from infrastructure constraints rather than model design
